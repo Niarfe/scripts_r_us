@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+
+lib_dir = File.expand_path("../../lib", __FILE__)
+require File.join(lib_dir, "scru")
+
+Scru.start(ARGV)
+
