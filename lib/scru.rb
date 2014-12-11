@@ -51,11 +51,11 @@ class Scru < Thor
       else
         puts "Please run 'scru set_metadata <file or directory>' to add metadata for files"
         puts "Or else pass the --force flag to upload anyways"
+        exit 1
       end
-      exit 1
     end
     file_list.each do |f|
-      push_to_rightscale(file_list)
+      push_to_rightscale(f)
     end
   end
   
@@ -94,7 +94,7 @@ class Scru < Thor
           in_metadata = true if line.start_with?('# ---')
         end
       end
-      puts "The file #{filename} #{has_metadata ? "has" : "does not have"} metadata"
+      # puts "The file #{filename} #{has_metadata ? "has" : "does not have"} metadata"
       has_metadata
     end
   end
@@ -115,12 +115,17 @@ class Scru < Thor
     file_list = []
     files.each do |file|
       raise ArgumentError.new("File #{file} does not exist") unless ::File.exists?(file)
+      if File.read(file).split("\n").length == 0
+        puts "Skipping #{file}, is empty"
+        next
+      end
       if ::File.directory?(file)
          puts "Skipping #{file}, it is a directory"
       else
         file_list |= [file]
       end
     end
+    file_list
   end
 
   def insert_metadata(file)
@@ -134,10 +139,6 @@ class Scru < Thor
       "# "
     ]
     file_lines = File.read(file).split("\n")
-    if file_lines.length == 0
-      puts "Skipping #{file}, is empty"
-      return
-    end
     if file_lines.first.include?("#!")
       file_lines.insert(1, "", metadata_lines)
     else
