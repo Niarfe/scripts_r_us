@@ -5,29 +5,8 @@ require 'right_api_client'
 require 'terminal-table'
 
 class Scru < Thor
-  desc "get_metadata <file>", "Gets the metadata from target file"
 
-  def get_metadata(file)
-    raise ArgumentError.new("File #{file} does not exist") unless ::File.exists?(file)
-    yaml_metadata = nil
-    File.open(file) do |file|
-      in_metadata = false
-      metadata = StringIO.new
-      file.each_line do |line|
-        if in_metadata
-          metadata << line[2 .. -1]
-          break if line.start_with?('# ...')
-        elsif line.start_with?('# ---')
-          metadata << line[2 .. -1]
-          in_metadata = true
-        end
-      end
-      metadata.rewind
-      yaml_metadata = YAML.load(metadata) || {}
-    end
-    pp yaml_metadata
-    yaml_metadata
-  end
+
 
   desc "list", "List RightScripts"
   method_option :filter, 
@@ -112,15 +91,19 @@ class Scru < Thor
       rightscript = rightscripts.first
     end
 
-    File.open(file, "w") do |f|
-      puts "Saving RightScript contents to #{file}"
-      f.puts(rightscript.source.show.value)
+    script_contents = rightscript.source.show.value
+    if file == "-"
+      puts script_contents
+    else
+      File.open(file, "w") do |f|
+        puts "Saving RightScript contents to #{file}"
+        f.puts(script_contents)
+      end
     end
-
   end
 
-  desc "has_meatadata?", "Test if a script has a metadata block"
-  def has_metadata?( filename )
+  private
+  def has_metadata?(filename)
     raise ArgumentError.new("File #{filename} does not exist") unless ::File.exists?(filename)
 
     File.open(filename) do |file|
@@ -138,8 +121,28 @@ class Scru < Thor
     end
   end
 
+  def get_metadata(file)
+    raise ArgumentError.new("File #{file} does not exist") unless ::File.exists?(file)
+    yaml_metadata = nil
+    File.open(file) do |file|
+      in_metadata = false
+      metadata = StringIO.new
+      file.each_line do |line|
+        if in_metadata
+          metadata << line[2 .. -1]
+          break if line.start_with?('# ...')
+        elsif line.start_with?('# ---')
+          metadata << line[2 .. -1]
+          in_metadata = true
+        end
+      end
+      metadata.rewind
+      yaml_metadata = YAML.load(metadata) || {}
+    end
+    pp yaml_metadata
+    yaml_metadata
+  end
 
-  private
   def api_client
     @client_config_file = File.expand_path('~/.right_api_client/login.yml')
     @client ||= RightApi::Client.new(YAML.load_file(@client_config_file))
