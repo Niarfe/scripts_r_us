@@ -1,6 +1,8 @@
 require 'pp'
 require 'stringio'
 require 'yaml'
+require 'right_api_client'
+require 'terminal-table'
 
 class Scru < Thor
   desc "get_metadata <file>", "Gets the metadata from target file"
@@ -32,6 +34,23 @@ class Scru < Thor
     :desc => "Filter names according to regular expression",
     :aliases => "-f"
   def list
+    filter_opts = {}
+    if options[:filter]
+      filter_opts = {
+        :filter => ["name==#{options[:filter]}"]
+      }
+    end
+    right_scripts = api_client.right_scripts.index(filter_opts)
+    puts ""
+    table = Terminal::Table.new do |t|
+      t << ['Name', "HREF"]
+      t.add_separator
+      right_scripts.each do |rs|
+        dash_href = public_href(rs)
+        t << [rs.name, dash_href]
+      end
+    end
+    puts table
   end
 
   desc "upload <files>", "Upload RightScript from file or directory"
@@ -76,8 +95,28 @@ class Scru < Thor
   method_option :name, 
     :desc => "RightScript Name to download",
     :aliases => "-n"
-  def download
+  def download(file)
     raise ArgumentError.new("Either name or id must be supplied") unless options[:name] || options[:id]
+    raise ArgumentError.new("Filename to download to must be supplied") unless file && !file.empty?
+
+    if options[:id]
+      rightscript = api_client.right_scripts(:id => options[:id]).show
+    elsif options[:name]
+      rightscripts = api_client.right_scripts.index(:filter => ["name==#{options[:name]}"])
+      rightscripts = rightscripts.select { |rs| rs.name == options[:name] }
+      if rightscripts.length > 1
+        raise ArgumentError.new("More than one rightscript round with name #{options[:name]}")
+      elsif rightscripts.length == 0
+        raise ArgumentError.new("Could not find rightscript named #{options[:name]}")
+      end
+      rightscript = rightscripts.first
+    end
+
+    File.open(file, "w") do |f|
+      puts "Saving RightScript contents to #{file}"
+      f.puts(rightscript.source.show.value)
+    end
+
   end
 
   desc "has_meatadata?", "Test if a script has a metadata block"
@@ -101,6 +140,20 @@ class Scru < Thor
 
 
   private
+  def api_client
+    @client_config_file = File.expand_path('~/.right_api_client/login.yml')
+    @client ||= RightApi::Client.new(YAML.load_file(@client_config_file))
+    @client
+  end
+
+
+  # works for deployment, simple stuff, won't work for everything
+  def public_href(rsrc)
+    account_id = api_client.instance_variable_get(:@account_id)
+    base_url = api_client.instance_variable_get(:@api_url)
+    "#{base_url}/acct/#{account_id}/#{rsrc.href.sub('/api/','')}"
+  end
+
   def verify_file_list(files)
     failed = []
     files.each do |file|
