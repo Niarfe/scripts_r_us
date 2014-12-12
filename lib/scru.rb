@@ -213,7 +213,27 @@ class Scru < Thor
   end
 
   def push_to_rightscale(file)
-    puts "Pushing #{file} up to RightScale"
+    if has_metadata?(file)
+      metadata = get_metadata(file)
+      name = metadata["RightScript Name"]
+    else
+      name = File.basename(file,File.extname(file))
+    end
+    rightscripts = api_client.right_scripts.index(:filter => ["name==#{name}"])
+    rightscripts = rightscripts.select { |rs| rs.name == name }
+    if rightscripts.length > 1
+      puts "WARNING: Cannot upload #{name}, multiple rightscripts match"
+      return
+    end
+    if rightscripts.length == 1
+      rs = rightscripts.first.show
+      puts "Pushing #{file} up to RightScale with RightScript name #{name} and href #{public_href(rs)}"
+      rs.source.update(File.read(file))
+    else
+      puts "SKIP TBD"
+      # rs = api_client.right_scripts.create(
+      # )
+    end
   end
 
   def get_from_rightcale( script_name )
