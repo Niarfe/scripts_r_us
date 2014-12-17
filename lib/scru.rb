@@ -62,7 +62,8 @@ class Scru < Thor
     file_list = get_file_list(files)
     files_no_metadata = verify_file_list(file_list)
     files_no_metadata.each do |file|
-      insert_metadata(file)
+      file_no_extension = File.basename(file,File.extname(file))
+      insert_metadata(file, file_no_extension)
     end
   end
 
@@ -98,6 +99,9 @@ class Scru < Thor
       File.open(file, "w") do |f|
         puts "Saving RightScript contents to #{file}"
         f.puts(script_contents)
+      end
+      unless has_metadata?(file)
+        insert_metadata(file, rightscript.name, rightscript.description)
       end
     end
   end
@@ -184,12 +188,11 @@ class Scru < Thor
     file_list
   end
 
-  def insert_metadata(file)
-    file_no_extension = File.basename(file,File.extname(file))
+  def insert_metadata(file, name, description = "")
     metadata_lines    = [
       "# ---",
-      "# RightScript Name: #{file_no_extension}",
-      "# Description: ",
+      "# RightScript Name: #{name}",
+      "# Description: #{description}",
       "# Packages: ",
       "# ...",
       "# "
