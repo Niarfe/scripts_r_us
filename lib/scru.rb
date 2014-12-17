@@ -20,6 +20,7 @@ class Scru < Thor
       }
     end
     right_scripts = api_client.right_scripts.index(filter_opts)
+    right_scripts.select! {|scr| scr.revision.to_i == 0}
     puts ""
     table = Terminal::Table.new do |t|
       t << ['Name', "HREF"]
@@ -83,7 +84,7 @@ class Scru < Thor
       rightscript = api_client.right_scripts(:id => options[:id]).show
     elsif options[:name]
       rightscripts = api_client.right_scripts.index(:filter => ["name==#{options[:name]}"])
-      rightscripts = rightscripts.select { |rs| rs.name == options[:name] }
+      rightscripts = rightscripts.select { |rs| rs.revision.to_i == 0 && rs.name == options[:name] }
       if rightscripts.length > 1
         raise ArgumentError.new("More than one rightscript round with name #{options[:name]}")
       elsif rightscripts.length == 0
@@ -225,7 +226,7 @@ class Scru < Thor
       description = nil
     end
     rightscripts = api_client.right_scripts.index(:filter => ["name==#{name}"])
-    rightscripts = rightscripts.select { |rs| rs.name == name }
+    rightscripts = rightscripts.select { |rs| rs.revision.to_i == 0 && rs.name == name }
     if rightscripts.length > 1
       puts "WARNING: Cannot upload #{name}, multiple rightscripts match"
       return
