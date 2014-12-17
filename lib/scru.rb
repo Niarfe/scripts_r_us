@@ -199,7 +199,7 @@ class Scru < Thor
       "# "
     ]
     file_lines = File.read(file).split("\n")
-    if file_lines.first.include?("#!")
+    if file_lines.length > 0 && file_lines.first.include?("#!")
       file_lines.insert(1, "", metadata_lines)
     else
       file_lines.insert(0, metadata_lines)
