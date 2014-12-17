@@ -219,8 +219,10 @@ class Scru < Thor
     if has_metadata?(file)
       metadata = get_metadata(file)
       name = metadata["RightScript Name"]
+      description = metadata["Description"]
     else
       name = File.basename(file,File.extname(file))
+      description = nil
     end
     rightscripts = api_client.right_scripts.index(:filter => ["name==#{name}"])
     rightscripts = rightscripts.select { |rs| rs.name == name }
@@ -232,6 +234,9 @@ class Scru < Thor
       rs = rightscripts.first.show
       puts "Pushing #{file} up to RightScale with RightScript name #{name} and href #{public_href(rs)}"
       rs.source.update(File.read(file))
+      if description
+        rs.update(:right_script => { :description => description })
+      end
     else
       puts "SKIP TBD"
       # rs = api_client.right_scripts.create(
