@@ -1,9 +1,8 @@
 GIT
   remote: https://github.com/rightscale/right_api_client.git
-  revision: 52edfdd44e7d406ea0f2f5c35a454703950e25cf
-  branch: right_script_fixes
+  revision: 8a7376fef684e5d8d6d8c13cfaeb97cd75b5fcf8
   specs:
-    right_api_client (1.5.24)
+    right_api_client (1.5.26)
       json (~> 1.0)
       mime-types (~> 1.0)
       rest-client (~> 1.6)
@@ -11,9 +10,9 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    json (1.8.1)
+    json (1.8.2)
     mime-types (1.25.1)
-    netrc (0.10.0)
+    netrc (0.10.2)
     rest-client (1.7.2)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)

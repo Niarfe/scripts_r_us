@@ -93,7 +93,7 @@ class Scru < Thor
       rightscript = rightscripts.first
     end
 
-    script_contents = rightscript.source.show.value
+    script_contents = rightscript.source.show.text
     if file == "-"
       puts script_contents
     else
