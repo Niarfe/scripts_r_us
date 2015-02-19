@@ -3,7 +3,6 @@
 require 'thor'
 
 lib_dir = File.expand_path("../../lib", __FILE__)
-require File.join(lib_dir, "scru")
+require File.join(lib_dir, "rightscript_upload")
 
-Scru.start(ARGV)
-
+RightscriptUpload.start(ARGV)
