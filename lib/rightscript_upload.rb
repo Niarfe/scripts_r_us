@@ -239,7 +239,7 @@ class RightscriptUpload < Thor
         rs.update(:right_script => { :description => description })
       end
     else
-      puts "SKIP TBD"
+      puts "Creation of a new RightScript is not yet supported"
       # rs = api_client.right_scripts.create(
       # )
     end
