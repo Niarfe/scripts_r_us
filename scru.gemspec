@@ -6,4 +6,5 @@ Gem::Specification.new do |gem|
   gem.authors     = ['RightScale']
   gem.files       = `git ls-files`.split(' ')
   gem.platform    = Gem::Platform::RUBY
+  gem.add_runtime_dependency 'thor'
 end
