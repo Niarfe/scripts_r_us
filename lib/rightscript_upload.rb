@@ -4,7 +4,7 @@ require 'yaml'
 require 'right_api_client'
 require 'terminal-table'
 
-class Scru < Thor
+class RightscriptUpload < Thor
 
 
 
@@ -48,7 +48,7 @@ class Scru < Thor
       if options[:force]
         puts "Force flag is set, uploading all files anyways"
       else
-        puts "Please run 'scru set_metadata <file or directory>' to add metadata for files"
+        puts "Please run 'rightscript_upload set_metadata <file or directory>' to add metadata for files"
         puts "Or else pass the --force flag to upload anyways"
         exit 1
       end
@@ -239,7 +239,7 @@ class Scru < Thor
         rs.update(:right_script => { :description => description })
       end
     else
-      puts "SKIP TBD"
+      puts "Creation of a new RightScript is not yet supported"
       # rs = api_client.right_scripts.create(
       # )
     end
