@@ -5,8 +5,8 @@ require 'right_api_client'
 require 'terminal-table'
 
 class RightscriptUpload < Thor
-
-
+  class_option :config, desc: 'The path to the configuration file containing the RightScale API credentials',
+    aliases: '-c', default: File.expand_path('~/.right_api_client/login.yml')
 
   desc "list", "List RightScripts"
   method_option :filter, 
@@ -149,8 +149,7 @@ class RightscriptUpload < Thor
   end
 
   def api_client
-    @client_config_file = File.expand_path('~/.right_api_client/login.yml')
-    @client ||= RightApi::Client.new(YAML.load_file(@client_config_file))
+    @client ||= RightApi::Client.new(YAML.load_file(options[:config]).merge(timeout: nil))
     @client
   end
 
