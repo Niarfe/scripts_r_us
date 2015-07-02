@@ -68,7 +68,7 @@ class RightscriptUpload < Thor
     end
   end
 
-  desc "download <file>", "Download RightScript to file"
+  desc "download <file> [-n -i] <script dash name>", "Download RightScript to file"
   method_option :id, 
     :desc => "RightScript ID number to download",
     :aliases => "-i",
