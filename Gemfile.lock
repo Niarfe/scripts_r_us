@@ -10,7 +10,7 @@ GIT
 PATH
   remote: .
   specs:
-    rightscript_upload (0.0.0)
+    rightscript_sync (0.0.0)
       right_api_client (~> 1.5.26)
       terminal-table
       thor
@@ -40,4 +40,4 @@ PLATFORMS
 
 DEPENDENCIES
   right_api_client!
-  rightscript_upload!
+  rightscript_sync!
