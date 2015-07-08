@@ -3,6 +3,6 @@
 require 'thor'
 
 lib_dir = File.expand_path("../../lib", __FILE__)
-require File.join(lib_dir, "rightscript_upload")
+require File.join(lib_dir, "rightscript_sync")
 
 RightscriptUpload.start(ARGV)
