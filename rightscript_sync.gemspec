@@ -1,7 +1,7 @@
 Gem::Specification.new do |gem|
-  gem.name        = 'rightscript_upload'
+  gem.name        = 'rightscript_sync'
   gem.version     = '0.0.0'
-  gem.executables = ['rightscript_upload']
+  gem.executables = ['rightscript_sync']
   gem.summary     = 'Sync scripts on a drive to RightScale'
   gem.authors     = ['RightScale']
   gem.files       = `git ls-files`.split(' ')
